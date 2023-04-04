@@ -1,0 +1,32 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.RSSUrls = void 0;
+exports.RSSUrls = [
+    "https://startlink.blog/author/baekjoon/feed",
+    "https://medium.com/feed/naver-place-dev",
+    "https://netmarble.engineering/feed",
+    "https://medium.com/feed/daangn",
+    "https://tech.devsisters.com/rss.xml",
+    "https://blog.banksalad.com/rss.xml",
+    "https://techblog.gccompany.co.kr/feed",
+    "https://techblog.woowahan.com/feed",
+    "https://medium.com/feed/wantedjobs",
+    "https://medium.com/feed/zigbang",
+    "https://dev.gmarket.com/feed",
+    "https://tech.kakao.com/feed/",
+    "https://tech.kakaoenterprise.com/feed",
+    "https://helloworld.kurly.com/feed.xml",
+    "https://toss.tech/rss.xml",
+    "https://techblog.yogiyo.co.kr/feed",
+    "https://blog.dramancompany.com/feed/",
+    "https://blog.est.ai/feed",
+    "https://hyperconnect.github.io/feed",
+    "https://engineering.linecorp.com/ko/feed",
+    "https://d2.naver.com/d2.atom",
+    "https://medium.com/feed/musinsa-tech",
+    "https://ridicorp.com/feed/",
+    "https://engineering-skcc.github.io/feed",
+    "https://tech.socarcorp.kr/feed",
+    "https://medium.com/feed/tving-team",
+    "https://medium.com/feed/@dev29cm",
+];
