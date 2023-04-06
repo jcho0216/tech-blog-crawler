@@ -20,20 +20,31 @@ const utils_1 = require("../utils");
 const constant_1 = require("../constant");
 function getTechBlogDataWithRSS() {
     return __awaiter(this, void 0, void 0, function* () {
-        const parser = new rss_parser_1.default();
+        const parser = new rss_parser_1.default({
+            headers: {
+                Accept: "*/*",
+            },
+        });
         const requests = constant_1.RSSUrls.map((url) => __awaiter(this, void 0, void 0, function* () {
             const request = yield parser
                 .parseURL(url)
-                .then((feed) => feed.items.map((item) => {
-                const { title, link, pubDate } = item;
-                const parsedDate = (0, moment_1.default)(pubDate).format("YYYY.MM.DD");
-                const data = {
-                    title: title !== null && title !== void 0 ? title : "",
-                    link: link !== null && link !== void 0 ? link : "",
-                    pubDate: parsedDate,
+                .then((feed) => {
+                var _a;
+                const blogTitle = (_a = feed.title) !== null && _a !== void 0 ? _a : "";
+                const blogData = feed.items.map((item) => {
+                    const { title, link, pubDate } = item;
+                    const parsedDate = (0, moment_1.default)(pubDate).format("YYYY.MM.DD");
+                    return {
+                        title: title !== null && title !== void 0 ? title : "",
+                        link: link !== null && link !== void 0 ? link : "",
+                        pubDate: parsedDate,
+                    };
+                });
+                return {
+                    blogName: blogTitle,
+                    data: blogData,
                 };
-                return data;
-            }))
+            })
                 .catch((error) => {
                 console.error(`Error scraping ${url} : ${error}`);
             });
@@ -47,13 +58,13 @@ exports.getTechBlogDataWithRSS = getTechBlogDataWithRSS;
 function getTechBlogDataWithoutRSS() {
     return __awaiter(this, void 0, void 0, function* () {
         const settledList = yield Promise.allSettled([
-            (0, custom_1.get강남언니Data)(),
-            (0, custom_1.get그린랩스Data)(),
-            (0, custom_1.get맘시터Data)(),
-            (0, custom_1.get카카오스타일Data)(),
-            (0, custom_1.get카카오페이Data)(),
-            (0, custom_1.get쿠팡Data)(),
-            (0, custom_1.get화해Data)(),
+            (0, custom_1.getGangnamunniData)(),
+            (0, custom_1.getGreenLabsData)(),
+            (0, custom_1.getMfortData)(),
+            (0, custom_1.getKakaoStyleData)(),
+            (0, custom_1.getKakaoPayData)(),
+            (0, custom_1.getCoupangData)(),
+            (0, custom_1.getHwahaeData)(),
         ]);
         return (0, utils_1.getFulfilledPromiseValueList)(settledList);
     });

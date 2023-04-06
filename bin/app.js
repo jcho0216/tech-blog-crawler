@@ -31,14 +31,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const crawler = __importStar(require("./crawlers"));
+const initializeFirebase_1 = __importDefault(require("./utils/initializeFirebase"));
+const api_1 = require("./utils/api");
+const dotenv_1 = __importDefault(require("dotenv"));
+const utils_1 = require("./utils");
 function main() {
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
+        const firestore = (0, initializeFirebase_1.default)();
+        dotenv_1.default.config();
+        const slackChannel = (_a = process.env.SLACK_CHANNEL_CODE) !== null && _a !== void 0 ? _a : "";
+        const slackBotToken = (_b = process.env.SLACK_BOT_TOKEN) !== null && _b !== void 0 ? _b : "";
+        const prevBlogData = yield (0, api_1.getBlogDatas)(firestore);
         const withRSSBlogData = yield crawler.getTechBlogDataWithRSS();
         const withoutRSSBlogData = yield crawler.getTechBlogDataWithoutRSS();
-        const BlogData = [...withRSSBlogData, ...withoutRSSBlogData];
-        console.log(BlogData);
+        const currentBlogData = [...withRSSBlogData, ...withoutRSSBlogData];
+        const newBlogData = (_c = (0, utils_1.getNewFeedDatas)(prevBlogData, currentBlogData)) !== null && _c !== void 0 ? _c : [];
+        yield (0, api_1.sendSlackMessage)(slackBotToken, slackChannel, newBlogData);
     });
 }
 main();
