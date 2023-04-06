@@ -1,20 +1,22 @@
 import axios, { AxiosResponse } from "axios";
 import cheerio from "cheerio";
-import { BlogDataType, 그린랩스Type } from "../../interface";
+import { FeedDataType, FirebaseDtoType, GreenLabsApiResponseType } from "../../interface";
 import { formatNonRssBlogsDate, removeAllWhitespace } from "../../utils";
 import moment from "moment";
 
-export async function get강남언니Data() {
-    const dataList: BlogDataType[] = [];
-    const 강남언니URL = "https://blog.gangnamunni.com";
+export async function getGangnamunniData() {
+    const feedDataList: FeedDataType[] = [];
+    const GANGNAMUNNI_URL = "https://blog.gangnamunni.com";
 
-    const response: AxiosResponse<string> = await axios.get(강남언니URL + "/blog/tech");
+    const response: AxiosResponse<string> = await axios.get(GANGNAMUNNI_URL + "/blog/tech");
 
     const $root = cheerio.load(response.data);
+    const blogTitle = $root("title").text();
+
     const elements = $root(".post-title a");
 
     for (let el of elements) {
-        const detailPageLink = 강남언니URL + $root(el).attr("href");
+        const detailPageLink = GANGNAMUNNI_URL + $root(el).attr("href");
         const response: AxiosResponse<string> = await axios.get(detailPageLink);
 
         const $detail = cheerio.load(response.data);
@@ -22,82 +24,90 @@ export async function get강남언니Data() {
         const title = $detail(".post-title").text();
         const pubDate = $detail(".post-date").text();
 
-        const data: BlogDataType = {
+        const data: FeedDataType = {
             title: removeAllWhitespace(title),
             link: detailPageLink,
             pubDate: removeAllWhitespace(pubDate),
         };
 
-        dataList.push(data);
+        feedDataList.push(data);
     }
 
-    return dataList;
+    return { blogName: blogTitle, data: feedDataList } as FirebaseDtoType;
 }
 
-export async function get그린랩스Data() {
-    const 그린랩스URL = "https://green-labs.github.io";
-    const 그린랩스DataURL = "https://green-labs.github.io/page-data/index/page-data.json";
+export async function getGreenLabsData() {
+    const GREEN_LABS_URL = "https://green-labs.github.io";
+    const GREEN_LABS_DATA_SOURCE_URL = "https://green-labs.github.io/page-data/index/page-data.json";
 
-    const response: AxiosResponse<그린랩스Type> = await axios.get(그린랩스DataURL);
+    const response: AxiosResponse<GreenLabsApiResponseType> = await axios.get(GREEN_LABS_DATA_SOURCE_URL);
 
+    const blogTitle = "greenlabs tech";
     const nodes = response.data.result.data.allMdx.nodes;
 
-    const dataList = nodes.map((node) => {
+    const feedDataList = nodes.map((node) => {
         const { title, date, slug } = node.frontmatter;
 
         return {
             title,
             pubDate: formatNonRssBlogsDate(date),
-            link: 그린랩스URL + slug,
-        } as BlogDataType;
+            link: GREEN_LABS_URL + slug,
+        } as FeedDataType;
     });
 
-    return dataList;
+    return {
+        blogName: blogTitle,
+        data: feedDataList,
+    } as FirebaseDtoType;
 }
 
-export async function get맘시터Data() {
-    const blogData: BlogDataType[] = [];
-    const 맘시터URL = "https://tech.mfort.co.kr";
-    const response: AxiosResponse<string> = await axios.get(맘시터URL);
+export async function getMfortData() {
+    const feedDataList: FeedDataType[] = [];
+    const MFORT_URL = "https://tech.mfort.co.kr";
+    const response: AxiosResponse<string> = await axios.get(MFORT_URL);
 
     const $root = cheerio.load(response.data);
-
+    const blogTitle = removeAllWhitespace($root("title").text());
     const elements = $root(".summary-item");
 
     for (let element of elements) {
         const title = $root(element).find("h2").text();
         const pubDate = $root(element).find(".text-sm").text();
-        const link = 맘시터URL + $root(element).find("a").attr("href");
+        const link = MFORT_URL + $root(element).find("a").attr("href");
 
-        blogData.push({
+        feedDataList.push({
             title,
             link,
             pubDate: formatNonRssBlogsDate(pubDate),
         });
     }
 
-    return blogData;
+    return {
+        blogName: blogTitle,
+        data: feedDataList,
+    } as FirebaseDtoType;
 }
 
-export async function get카카오스타일Data() {
-    const blogData: BlogDataType[] = [];
-    const 카카오스타일URL = "https://devblog.kakaostyle.com";
-    const response: AxiosResponse<string> = await axios.get(카카오스타일URL + "/ko");
+export async function getKakaoStyleData() {
+    const feedDataList: FeedDataType[] = [];
+    const KAKAO_STYLE_URL = "https://devblog.kakaostyle.com";
+    const response: AxiosResponse<string> = await axios.get(KAKAO_STYLE_URL + "/ko");
 
     const $root = cheerio.load(response.data);
+    const blogTitle = $root("title").text();
 
     const elements = $root(".col-12.col-lg-9").children();
 
     for (let element of elements) {
         const title = $root(element).find(".posts-title a").text();
         const pubDate = $root(element).find(".posts-date").text();
-        const link = 카카오스타일URL + $root(element).find(".posts-title a").attr("href");
+        const link = KAKAO_STYLE_URL + $root(element).find(".posts-title a").attr("href");
 
         const baseDate = moment(pubDate, "DD MMM YYYY");
         const parsedDate = baseDate.format("YYYY.MM.DD");
 
         if (title && link) {
-            blogData.push({
+            feedDataList.push({
                 title,
                 link,
                 pubDate: parsedDate,
@@ -105,43 +115,48 @@ export async function get카카오스타일Data() {
         }
     }
 
-    return blogData;
+    return { blogName: blogTitle, data: feedDataList } as FirebaseDtoType;
 }
 
-export async function get카카오페이Data() {
-    const blogData: BlogDataType[] = [];
-    const 카카오페이URL = "https://tech.kakaopay.com";
-    const response: AxiosResponse<string> = await axios.get(카카오페이URL);
+export async function getKakaoPayData() {
+    const feedDataList: FeedDataType[] = [];
+    const KAKAO_PAY_URL = "https://tech.kakaopay.com";
+    const response: AxiosResponse<string> = await axios.get(KAKAO_PAY_URL);
 
     const $root = cheerio.load(response.data);
     const elements = $root("._postList_xp5mg_34 ul").children();
+    const blogTitle = $root("title").text();
 
     for (let element of elements) {
         const title = $root(element).find("h3").text();
         const pubDate = $root(element).find("time").text();
-        const link = 카카오페이URL + $root(element).find("a").attr("href");
+        const link = KAKAO_PAY_URL + $root(element).find("a").attr("href");
 
         const baseDate = moment(pubDate, "YYYY. M. DD");
         const parsedDate = baseDate.format("YYYY.MM.DD");
 
-        blogData.push({
+        feedDataList.push({
             title,
             link,
             pubDate: parsedDate,
         });
     }
 
-    return blogData;
+    return {
+        blogName: blogTitle,
+        data: feedDataList,
+    } as FirebaseDtoType;
 }
 
-export async function get쿠팡Data() {
-    const blogData: BlogDataType[] = [];
-    const 쿠팡URL = "https://medium.com/@coupang-engineering-kr";
+export async function getCoupangData() {
+    const feedDataList: FeedDataType[] = [];
+    const COUPANG_URL = "https://medium.com/@coupang-engineering-kr";
     const mediumURL = "https://medium.com";
-    const response: AxiosResponse<string> = await axios.get(쿠팡URL);
+    const response: AxiosResponse<string> = await axios.get(COUPANG_URL);
 
     const $root = cheerio.load(response.data);
     const elements = $root(".ix.l article");
+    const blogTitle = $root("title").text();
 
     for (let element of elements) {
         const title = $root(element).find("h2").text();
@@ -151,39 +166,46 @@ export async function get쿠팡Data() {
         const baseDate = moment(pubDate, "MMM DD, YYYY");
         const parsedDate = baseDate.format("YYYY.MM.DD");
 
-        blogData.push({
+        feedDataList.push({
             title,
             link,
             pubDate: parsedDate,
         });
     }
 
-    return blogData;
+    return {
+        blogName: blogTitle,
+        data: feedDataList,
+    } as FirebaseDtoType;
 }
 
-export async function get화해Data() {
-    const blogData: BlogDataType[] = [];
-    const 화해URL = "https://blog.hwahae.co.kr/category/all/tech";
-    const detail화해URL = "https://blog.hwahae.co.kr/all/tech";
-    const response: AxiosResponse<string> = await axios.get(화해URL);
+export async function getHwahaeData() {
+    const feedDataList: FeedDataType[] = [];
+    const HWAHAE_URL = "https://blog.hwahae.co.kr/category/all/tech";
+    const HWAHAE_URL_FOR_DETAIL = "https://blog.hwahae.co.kr/all/tech";
+    const response: AxiosResponse<string> = await axios.get(HWAHAE_URL);
 
     const $root = cheerio.load(response.data);
     const elements = $root(".e17bt4f62.css-1yjtq2.e1djbxbw1");
+    const blogTitle = $root("title").text();
 
     for (let element of elements) {
         const title = $root(element).find(".css-smhxnw.e1djbxbw5").text();
         const pubDate = $root(element).find(".css-18pnawy.e1djbxbw6").text();
-        const link = detail화해URL + $root(element).find("a").attr("href");
+        const link = HWAHAE_URL_FOR_DETAIL + $root(element).find("a").attr("href");
 
         const baseDate = moment(pubDate, "YYYY. MM. DD");
         const parsedDate = baseDate.format("YYYY.MM.DD");
 
-        blogData.push({
+        feedDataList.push({
             title,
             link,
             pubDate: parsedDate,
         });
     }
 
-    return blogData;
+    return {
+        blogName: blogTitle,
+        data: feedDataList,
+    } as FirebaseDtoType;
 }

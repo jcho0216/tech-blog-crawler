@@ -1,39 +1,48 @@
 import moment from "moment";
 import Parser from "rss-parser";
 import {
-    get강남언니Data,
-    get그린랩스Data,
-    get맘시터Data,
-    get카카오스타일Data,
-    get카카오페이Data,
-    get쿠팡Data,
-    get화해Data,
+    getGangnamunniData,
+    getGreenLabsData,
+    getMfortData,
+    getKakaoStyleData,
+    getKakaoPayData,
+    getCoupangData,
+    getHwahaeData,
 } from "./custom";
 
-import { BlogDataType } from "../interface";
+import { FeedDataType, FirebaseDtoType } from "../interface";
 import { getFulfilledPromiseValueList } from "../utils";
 import { RSSUrls } from "../constant";
 
 export async function getTechBlogDataWithRSS() {
-    const parser = new Parser();
+    const parser = new Parser({
+        headers: {
+            Accept: "*/*",
+        },
+    });
 
     const requests = RSSUrls.map(async (url) => {
         const request = await parser
             .parseURL(url)
-            .then((feed) =>
-                feed.items.map((item) => {
+            .then((feed) => {
+                const blogTitle = feed.title ?? "";
+
+                const blogData = feed.items.map((item) => {
                     const { title, link, pubDate } = item;
                     const parsedDate = moment(pubDate).format("YYYY.MM.DD");
 
-                    const data: BlogDataType = {
+                    return {
                         title: title ?? "",
                         link: link ?? "",
                         pubDate: parsedDate,
-                    };
+                    } as FeedDataType;
+                });
 
-                    return data;
-                })
-            )
+                return {
+                    blogName: blogTitle,
+                    data: blogData,
+                } as FirebaseDtoType;
+            })
             .catch((error) => {
                 console.error(`Error scraping ${url} : ${error}`);
             });
@@ -43,19 +52,19 @@ export async function getTechBlogDataWithRSS() {
 
     const settledList = await Promise.allSettled([...requests]);
 
-    return getFulfilledPromiseValueList<BlogDataType[]>(settledList);
+    return getFulfilledPromiseValueList<FirebaseDtoType>(settledList);
 }
 
 export async function getTechBlogDataWithoutRSS() {
     const settledList = await Promise.allSettled([
-        get강남언니Data(),
-        get그린랩스Data(),
-        get맘시터Data(),
-        get카카오스타일Data(),
-        get카카오페이Data(),
-        get쿠팡Data(),
-        get화해Data(),
+        getGangnamunniData(),
+        getGreenLabsData(),
+        getMfortData(),
+        getKakaoStyleData(),
+        getKakaoPayData(),
+        getCoupangData(),
+        getHwahaeData(),
     ]);
 
-    return getFulfilledPromiseValueList<BlogDataType[]>(settledList);
+    return getFulfilledPromiseValueList<FirebaseDtoType>(settledList);
 }

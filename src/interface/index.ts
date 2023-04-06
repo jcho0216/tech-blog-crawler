@@ -1,10 +1,15 @@
-export interface BlogDataType {
+export interface FeedDataType {
     title: string;
     link: string;
     pubDate: string;
 }
 
-interface 그린랩스frontmatterType {
+export interface FirebaseDtoType {
+    blogName: string;
+    data: FeedDataType[];
+}
+
+interface GreenLabsfrontmatterType {
     title: string;
     date: string;
     slug: string;
@@ -15,13 +20,12 @@ interface 그린랩스frontmatterType {
     tags: string[];
 }
 
-export interface 그린랩스Type {
+export interface GreenLabsApiResponseType {
     result: {
         data: {
             allMdx: {
-                nodes: { frontmatter: 그린랩스frontmatterType }[];
+                nodes: { frontmatter: GreenLabsfrontmatterType }[];
             };
         };
     };
 }
-

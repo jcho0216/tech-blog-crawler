@@ -1,2 +1,6 @@
 /node_modules
 /yarn-error.log
+
+/tech-blog-crawling-firebase-adminsdk-ve5xq-03ce44f69c.json
+
+/.env
