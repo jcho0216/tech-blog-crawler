@@ -1,26 +1,35 @@
+import dotenv from "dotenv";
+import cron from "node-cron";
+
 import * as crawler from "./crawlers";
 import initializeFirestore from "./utils/initializeFirebase";
-import { getBlogDatas, postBlogDatas, sendSlackMessage } from "./utils/api";
-
-import dotenv from "dotenv";
+import { getBlogDatas, postBlogDatas, sendGreetings, sendSlackMessage } from "./utils/api";
 import { getNewFeedDatas } from "./utils";
 
 async function main() {
     const firestore = initializeFirestore();
     dotenv.config();
 
-    const prevBlogData = await getBlogDatas(firestore);
+    // 평일 오전 10시 실행
+    const crawlingCycle = "0 10 * * 1-5";
 
-    const withRSSBlogData = await crawler.getTechBlogDataWithRSS();
-    const withoutRSSBlogData = await crawler.getTechBlogDataWithoutRSS();
+    cron.schedule(crawlingCycle, async () => {
+        const prevBlogData = await getBlogDatas(firestore);
 
-    const currentBlogData = [...withRSSBlogData, ...withoutRSSBlogData];
+        const withRSSBlogData = await crawler.getTechBlogDataWithRSS();
+        const withoutRSSBlogData = await crawler.getTechBlogDataWithoutRSS();
 
-    const newFeeds = getNewFeedDatas(prevBlogData, currentBlogData) ?? [];
+        const currentBlogData = [...withRSSBlogData, ...withoutRSSBlogData];
 
-    await sendSlackMessage(newFeeds);
+        const newFeeds = getNewFeedDatas(prevBlogData, currentBlogData) ?? [];
 
-    // await postBlogDatas(firestore, currentBlogData);
+        if (newFeeds.length <= 0) return;
+
+        await sendGreetings();
+        await sendSlackMessage(newFeeds);
+
+        await postBlogDatas(firestore, currentBlogData);
+    });
 }
 
 main();
