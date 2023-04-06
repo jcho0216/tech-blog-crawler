@@ -23,25 +23,23 @@ export function getNewFeedDatas(prevBlogDatas: FirebaseDtoType[], currentBlogDat
     const newFeedDatas: FirebaseDtoType[] = [];
 
     for (let prevBlogData of prevBlogDatas) {
-        const { blogName, data: prevBlogFeedData } = prevBlogData;
-        const latestUploadDate = prevBlogFeedData[0].pubDate;
-
-        const ToMomentDate = (date: string) => {
-            return moment(date, "YYYY.MM.DD");
-        };
-
+        const { blogName: prevBlogDataBlogname, data: prevBlogFeedData } = prevBlogData;
         const matchingBlogDataInCurrent = currentBlogDatas.find((currentBlogData) => {
-            return currentBlogData.blogName === blogName;
+            return currentBlogData.blogName === prevBlogDataBlogname;
         });
 
         if (!matchingBlogDataInCurrent) return;
+        const oldKeys = prevBlogFeedData.map((value) => `${value.title}-${value.pubDate}`);
+
         const newFeeds = matchingBlogDataInCurrent.data.filter((value) => {
-            return ToMomentDate(value.pubDate).isAfter(ToMomentDate(latestUploadDate));
+            const newBlogDataKey = `${value.title}-${value.pubDate}`;
+
+            const isNewFeed = !oldKeys.includes(newBlogDataKey);
+            return isNewFeed;
         });
 
-        if (newFeeds.length > 0) {
-            newFeedDatas.push({ blogName, data: newFeeds } as FirebaseDtoType);
-        }
+        if (newFeeds.length <= 0) continue;
+        newFeedDatas.push({ blogName: prevBlogDataBlogname, data: newFeeds } as FirebaseDtoType);
     }
 
     return newFeedDatas;
