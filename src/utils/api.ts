@@ -23,14 +23,16 @@ export async function postBlogDatas(firestore: FirebaseFirestore.Firestore, data
     await Promise.allSettled([...requests]);
 }
 
-export async function sendGreetings(token: string, channel: string) {
-    const slackbot = new WebClient(token);
+export async function sendGreetings() {
+    const slackChannel = process.env.SLACK_CHANNEL_CODE ?? "";
+    const slackBotToken = process.env.SLACK_BOT_TOKEN ?? "";
+    const slackbot = new WebClient(slackBotToken);
+
+    const date = moment().locale('ko').format("YYYY년 M월 D일, a h시");
 
     await slackbot.chat.postMessage({
-        channel,
-        text: `*“모두가 함께 앞으로 나아가면 성공은 저절로 따라옵니다.” — 미국 기업가이자 Ford Motor Company 창립자 Henry Ford*`,
-        mrkdwn: true,
-        unfurl_links: true,
+        channel: slackChannel,
+        text: `*${date} 기준 최신 블로그 글 목록!*`,
     });
 }
 
@@ -45,17 +47,16 @@ export async function sendSlackMessage(blogDatas: FirebaseDtoType[]) {
 
         await chat.postMessage({
             channel: slackChannel,
-            text: `*_${blogName}_*`,
+            text: `[ *_${blogName}_* ]`,
             mrkdwn: true,
         });
 
         for (let feedData of feedDatas) {
-            const baseDate = moment(feedData.pubDate, "YYYY.MM.DD");
-            const parsedDate = baseDate.format("YYYY년 MM월 DD일");
+            const date = feedData.pubDate;
 
             await chat.postMessage({
                 channel: slackChannel,
-                text: `제목 : *${feedData.title}* \n날짜 : ${parsedDate}\n링크 : <${feedData.link}|글 보러가기>`,
+                text: `∙  <${feedData.link}|${feedData.title}> (${date})`,
                 mrkdwn: true,
                 unfurl_links: true,
                 unfurl_media: true,
