@@ -22,29 +22,24 @@ function getFulfilledPromiseValueList(promiseSettledList) {
     return fulfilledList;
 }
 exports.getFulfilledPromiseValueList = getFulfilledPromiseValueList;
-function getNewFeedDatas(prevBlogData, currentBlogData) {
+function getNewFeedDatas(prevBlogDatas, currentBlogDatas) {
     const newFeedDatas = [];
-    const latestUploadDatesByBlog = prevBlogData.map((value) => {
-        const blogName = value.blogName;
-        const latestUploadDate = value.data[0].pubDate;
-        return { blogName, latestUploadDate };
-    });
-    for (let value of latestUploadDatesByBlog) {
-        const { blogName, latestUploadDate } = value;
+    for (let prevBlogData of prevBlogDatas) {
+        const { blogName, data: prevBlogFeedData } = prevBlogData;
+        const latestUploadDate = prevBlogFeedData[0].pubDate;
         const ToMomentDate = (date) => {
             return (0, moment_1.default)(date, "YYYY.MM.DD");
         };
-        const matchingBlogData = currentBlogData.find((value) => {
-            return value.blogName === blogName;
+        const matchingBlogDataInCurrent = currentBlogDatas.find((currentBlogData) => {
+            return currentBlogData.blogName === blogName;
         });
-        if (!matchingBlogData)
+        if (!matchingBlogDataInCurrent)
             return;
-        const currentData = matchingBlogData.data;
-        const newFeeds = currentData.filter((value) => {
+        const newFeeds = matchingBlogDataInCurrent.data.filter((value) => {
             return ToMomentDate(value.pubDate).isAfter(ToMomentDate(latestUploadDate));
         });
         if (newFeeds.length > 0) {
-            newFeedDatas.push(...newFeeds);
+            newFeedDatas.push({ blogName, data: newFeeds });
         }
     }
     return newFeedDatas;

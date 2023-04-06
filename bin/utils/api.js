@@ -48,19 +48,31 @@ function sendGreetings(token, channel) {
     });
 }
 exports.sendGreetings = sendGreetings;
-function sendSlackMessage(token, channel, data) {
+function sendSlackMessage(blogDatas) {
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
-        data.map((feedData) => __awaiter(this, void 0, void 0, function* () {
-            const baseDate = (0, moment_1.default)(feedData.pubDate, "YYYY.MM.DD");
-            const parsedDate = baseDate.format("YYYY년 MM월 DD일");
-            const slackbot = new web_api_1.WebClient(token);
-            yield slackbot.chat.postMessage({
-                channel,
-                text: ` \n제목 : *${feedData.title}* \n날짜 : ${parsedDate}\n링크 : <${feedData.link}|글 보러가기>`,
+        const slackChannel = (_a = process.env.SLACK_CHANNEL_CODE) !== null && _a !== void 0 ? _a : "";
+        const slackBotToken = (_b = process.env.SLACK_BOT_TOKEN) !== null && _b !== void 0 ? _b : "";
+        const { chat } = new web_api_1.WebClient(slackBotToken);
+        for (let blogData of blogDatas) {
+            const { blogName, data: feedDatas } = blogData;
+            yield chat.postMessage({
+                channel: slackChannel,
+                text: `*_${blogName}_*`,
                 mrkdwn: true,
-                unfurl_links: true,
             });
-        }));
+            for (let feedData of feedDatas) {
+                const baseDate = (0, moment_1.default)(feedData.pubDate, "YYYY.MM.DD");
+                const parsedDate = baseDate.format("YYYY년 MM월 DD일");
+                yield chat.postMessage({
+                    channel: slackChannel,
+                    text: `제목 : *${feedData.title}* \n날짜 : ${parsedDate}\n링크 : <${feedData.link}|글 보러가기>`,
+                    mrkdwn: true,
+                    unfurl_links: true,
+                    unfurl_media: true,
+                });
+            }
+        }
     });
 }
 exports.sendSlackMessage = sendSlackMessage;
