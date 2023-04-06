@@ -7,7 +7,6 @@ function initializeFirestore() {
     (0, app_1.initializeApp)({
         credential: (0, app_1.cert)(serviceAccount),
     });
-    const db = (0, firestore_1.getFirestore)();
-    return db;
+    return (0, firestore_1.getFirestore)();
 }
 exports.default = initializeFirestore;

@@ -36,14 +36,16 @@ function postBlogDatas(firestore, data) {
     });
 }
 exports.postBlogDatas = postBlogDatas;
-function sendGreetings(token, channel) {
+function sendGreetings() {
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
-        const slackbot = new web_api_1.WebClient(token);
+        const slackChannel = (_a = process.env.SLACK_CHANNEL_CODE) !== null && _a !== void 0 ? _a : "";
+        const slackBotToken = (_b = process.env.SLACK_BOT_TOKEN) !== null && _b !== void 0 ? _b : "";
+        const slackbot = new web_api_1.WebClient(slackBotToken);
+        const date = (0, moment_1.default)().locale('ko').format("YYYY년 M월 D일, a h시");
         yield slackbot.chat.postMessage({
-            channel,
-            text: `*“모두가 함께 앞으로 나아가면 성공은 저절로 따라옵니다.” — 미국 기업가이자 Ford Motor Company 창립자 Henry Ford*`,
-            mrkdwn: true,
-            unfurl_links: true,
+            channel: slackChannel,
+            text: `*${date} 기준 최신 블로그 글 목록!*`,
         });
     });
 }
@@ -58,15 +60,14 @@ function sendSlackMessage(blogDatas) {
             const { blogName, data: feedDatas } = blogData;
             yield chat.postMessage({
                 channel: slackChannel,
-                text: `*_${blogName}_*`,
+                text: `[ *_${blogName}_* ]`,
                 mrkdwn: true,
             });
             for (let feedData of feedDatas) {
-                const baseDate = (0, moment_1.default)(feedData.pubDate, "YYYY.MM.DD");
-                const parsedDate = baseDate.format("YYYY년 MM월 DD일");
+                const date = feedData.pubDate;
                 yield chat.postMessage({
                     channel: slackChannel,
-                    text: `제목 : *${feedData.title}* \n날짜 : ${parsedDate}\n링크 : <${feedData.link}|글 보러가기>`,
+                    text: `∙  <${feedData.link}|${feedData.title}> (${date})`,
                     mrkdwn: true,
                     unfurl_links: true,
                     unfurl_media: true,

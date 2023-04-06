@@ -35,22 +35,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const dotenv_1 = __importDefault(require("dotenv"));
+const node_cron_1 = __importDefault(require("node-cron"));
 const crawler = __importStar(require("./crawlers"));
 const initializeFirebase_1 = __importDefault(require("./utils/initializeFirebase"));
 const api_1 = require("./utils/api");
-const dotenv_1 = __importDefault(require("dotenv"));
 const utils_1 = require("./utils");
 function main() {
-    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const firestore = (0, initializeFirebase_1.default)();
         dotenv_1.default.config();
-        const prevBlogData = yield (0, api_1.getBlogDatas)(firestore);
-        const withRSSBlogData = yield crawler.getTechBlogDataWithRSS();
-        const withoutRSSBlogData = yield crawler.getTechBlogDataWithoutRSS();
-        const currentBlogData = [...withRSSBlogData, ...withoutRSSBlogData];
-        const newFeeds = (_a = (0, utils_1.getNewFeedDatas)(prevBlogData, currentBlogData)) !== null && _a !== void 0 ? _a : [];
-        yield (0, api_1.sendSlackMessage)(newFeeds);
+        // 평일 오전 10시 실행
+        const crawlingCycle = "0 10 * * 1-5";
+        node_cron_1.default.schedule(crawlingCycle, () => __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const prevBlogData = yield (0, api_1.getBlogDatas)(firestore);
+            const withRSSBlogData = yield crawler.getTechBlogDataWithRSS();
+            const withoutRSSBlogData = yield crawler.getTechBlogDataWithoutRSS();
+            const currentBlogData = [...withRSSBlogData, ...withoutRSSBlogData];
+            const newFeeds = (_a = (0, utils_1.getNewFeedDatas)(prevBlogData, currentBlogData)) !== null && _a !== void 0 ? _a : [];
+            if (newFeeds.length <= 0)
+                return;
+            yield (0, api_1.sendGreetings)();
+            yield (0, api_1.sendSlackMessage)(newFeeds);
+            yield (0, api_1.postBlogDatas)(firestore, currentBlogData);
+        }));
     });
 }
 main();
