@@ -8,9 +8,7 @@ function initializeFirestore() {
         credential: cert(serviceAccount),
     });
 
-    const db = getFirestore();
-
-    return db;
+    return getFirestore();
 }
 
 export default initializeFirestore;
