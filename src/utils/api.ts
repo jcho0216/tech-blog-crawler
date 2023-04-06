@@ -23,7 +23,6 @@ export async function postBlogDatas(firestore: FirebaseFirestore.Firestore, data
     await Promise.allSettled([...requests]);
 }
 
-
 export async function sendGreetings(token: string, channel: string) {
     const slackbot = new WebClient(token);
 
@@ -35,19 +34,32 @@ export async function sendGreetings(token: string, channel: string) {
     });
 }
 
-export async function sendSlackMessage(token: string, channel: string, data: FeedDataType[]) {
-    data.map(async (feedData) => {
-        const baseDate = moment(feedData.pubDate, "YYYY.MM.DD");
-        const parsedDate = baseDate.format("YYYY년 MM월 DD일");
-    
-        const slackbot = new WebClient(token);
-    
-        await slackbot.chat.postMessage({
-            channel,
-            text: ` \n제목 : *${feedData.title}* \n날짜 : ${parsedDate}\n링크 : <${feedData.link}|글 보러가기>`,
+export async function sendSlackMessage(blogDatas: FirebaseDtoType[]) {
+    const slackChannel = process.env.SLACK_CHANNEL_CODE ?? "";
+    const slackBotToken = process.env.SLACK_BOT_TOKEN ?? "";
+
+    const { chat } = new WebClient(slackBotToken);
+
+    for (let blogData of blogDatas) {
+        const { blogName, data: feedDatas } = blogData;
+
+        await chat.postMessage({
+            channel: slackChannel,
+            text: `*_${blogName}_*`,
             mrkdwn: true,
-            unfurl_links: true,
         });
-    });
-   
+
+        for (let feedData of feedDatas) {
+            const baseDate = moment(feedData.pubDate, "YYYY.MM.DD");
+            const parsedDate = baseDate.format("YYYY년 MM월 DD일");
+
+            await chat.postMessage({
+                channel: slackChannel,
+                text: `제목 : *${feedData.title}* \n날짜 : ${parsedDate}\n링크 : <${feedData.link}|글 보러가기>`,
+                mrkdwn: true,
+                unfurl_links: true,
+                unfurl_media: true,
+            });
+        }
+    }
 }

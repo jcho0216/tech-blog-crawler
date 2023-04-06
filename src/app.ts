@@ -9,9 +9,6 @@ async function main() {
     const firestore = initializeFirestore();
     dotenv.config();
 
-    const slackChannel = process.env.SLACK_CHANNEL_CODE ?? "";
-    const slackBotToken = process.env.SLACK_BOT_TOKEN ?? "";
-
     const prevBlogData = await getBlogDatas(firestore);
 
     const withRSSBlogData = await crawler.getTechBlogDataWithRSS();
@@ -19,9 +16,10 @@ async function main() {
 
     const currentBlogData = [...withRSSBlogData, ...withoutRSSBlogData];
 
-    const newBlogData = getNewFeedDatas(prevBlogData, currentBlogData) ?? [];
+    const newFeeds = getNewFeedDatas(prevBlogData, currentBlogData) ?? [];
 
-    await sendSlackMessage(slackBotToken, slackChannel, newBlogData);
+    await sendSlackMessage(newFeeds);
+
     // await postBlogDatas(firestore, currentBlogData);
 }
 
