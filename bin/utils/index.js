@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getNewFeedDatas = exports.getFulfilledPromiseValueList = exports.formatNonRssBlogsDate = exports.removeAllWhitespace = void 0;
 const moment_1 = __importDefault(require("moment"));
 function removeAllWhitespace(value) {
-    const temp = value.replace("\n", " ");
+    const temp = value.replace("\n", "");
     return temp.trim();
 }
 exports.removeAllWhitespace = removeAllWhitespace;
