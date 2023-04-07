@@ -46,7 +46,7 @@ function main() {
         const firestore = (0, initializeFirebase_1.default)();
         dotenv_1.default.config();
         // 평일 오전 10시 실행
-        const crawlingCycle = "0 9 * * 1-5";
+        const crawlingCycle = "0 10 * * 1-5";
         node_cron_1.default.schedule(crawlingCycle, () => __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {

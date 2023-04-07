@@ -11,7 +11,7 @@ async function main() {
     dotenv.config();
 
     // 평일 오전 10시 실행
-    const crawlingCycle = "0 9 * * 1-5";
+    const crawlingCycle = "0 10 * * 1-5";
 
     cron.schedule(crawlingCycle, async () => {
         try {
