@@ -2,8 +2,8 @@ import moment from "moment";
 import { FirebaseDtoType } from "../interface";
 
 export function removeAllWhitespace(value: string) {
-    const temp = value.replaceAll("\n", "");
-    return temp.replaceAll(" ", "");
+    const temp = value.replace("\n", "");
+    return temp.trim();
 }
 
 export function formatNonRssBlogsDate(value: string) {
@@ -28,7 +28,7 @@ export function getNewFeedDatas(prevBlogDatas: FirebaseDtoType[], currentBlogDat
             return currentBlogData.blogName === prevBlogDataBlogname;
         });
 
-        if (!matchingBlogDataInCurrent) return;
+        if (!matchingBlogDataInCurrent) continue;
         const oldKeys = prevBlogFeedData.map((value) => `${value.title}-${value.pubDate}`);
 
         const newFeeds = matchingBlogDataInCurrent.data.filter((value) => {
