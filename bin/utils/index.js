@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getNewFeedDatas = exports.getFulfilledPromiseValueList = exports.formatNonRssBlogsDate = exports.removeAllWhitespace = void 0;
 const moment_1 = __importDefault(require("moment"));
 function removeAllWhitespace(value) {
-    const temp = value.replaceAll("\n", "");
-    return temp.replaceAll(" ", "");
+    const temp = value.replace("\n", " ");
+    return temp.trim();
 }
 exports.removeAllWhitespace = removeAllWhitespace;
 function formatNonRssBlogsDate(value) {
@@ -30,7 +30,7 @@ function getNewFeedDatas(prevBlogDatas, currentBlogDatas) {
             return currentBlogData.blogName === prevBlogDataBlogname;
         });
         if (!matchingBlogDataInCurrent)
-            return;
+            continue;
         const oldKeys = prevBlogFeedData.map((value) => `${value.title}-${value.pubDate}`);
         const newFeeds = matchingBlogDataInCurrent.data.filter((value) => {
             const newBlogDataKey = `${value.title}-${value.pubDate}`;

@@ -46,19 +46,26 @@ function main() {
         const firestore = (0, initializeFirebase_1.default)();
         dotenv_1.default.config();
         // 평일 오전 10시 실행
-        const crawlingCycle = "0 10 * * 1-5";
+        const crawlingCycle = "0 9 * * 1-5";
         node_cron_1.default.schedule(crawlingCycle, () => __awaiter(this, void 0, void 0, function* () {
             var _a;
-            const prevBlogData = yield (0, api_1.getBlogDatas)(firestore);
-            const withRSSBlogData = yield crawler.getTechBlogDataWithRSS();
-            const withoutRSSBlogData = yield crawler.getTechBlogDataWithoutRSS();
-            const currentBlogData = [...withRSSBlogData, ...withoutRSSBlogData];
-            const newFeeds = (_a = (0, utils_1.getNewFeedDatas)(prevBlogData, currentBlogData)) !== null && _a !== void 0 ? _a : [];
-            if (newFeeds.length <= 0)
-                return;
-            yield (0, api_1.sendGreetings)();
-            yield (0, api_1.sendSlackMessage)(newFeeds);
-            yield (0, api_1.postBlogDatas)(firestore, currentBlogData);
+            try {
+                console.log("크롤링 시작");
+                const prevBlogData = yield (0, api_1.getBlogDatas)(firestore);
+                const withRSSBlogData = yield crawler.getTechBlogDataWithRSS();
+                const withoutRSSBlogData = yield crawler.getTechBlogDataWithoutRSS();
+                const currentBlogData = [...withRSSBlogData, ...withoutRSSBlogData];
+                const newFeeds = (_a = (0, utils_1.getNewFeedDatas)(prevBlogData, currentBlogData)) !== null && _a !== void 0 ? _a : [];
+                if (newFeeds.length <= 0)
+                    return;
+                yield (0, api_1.sendGreetings)();
+                yield (0, api_1.sendSlackMessage)(newFeeds);
+                yield (0, api_1.postBlogDatas)(firestore, currentBlogData);
+                console.log('크롤링 완료');
+            }
+            catch (error) {
+                console.log('에러가 발생하였습니다.', error);
+            }
         }));
     });
 }

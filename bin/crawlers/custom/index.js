@@ -29,7 +29,7 @@ function getGangnamunniData() {
             const detailPageLink = GANGNAMUNNI_URL + $root(el).attr("href");
             const response = yield axios_1.default.get(detailPageLink);
             const $detail = cheerio_1.default.load(response.data);
-            const title = $detail(".post-title").text();
+            const title = $detail("h1.post-title").text();
             const pubDate = $detail(".post-date").text();
             const data = {
                 title: (0, utils_1.removeAllWhitespace)(title),
