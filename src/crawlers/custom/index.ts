@@ -21,7 +21,7 @@ export async function getGangnamunniData() {
 
         const $detail = cheerio.load(response.data);
 
-        const title = $detail(".post-title").text();
+        const title = $detail("h1.post-title").text();
         const pubDate = $detail(".post-date").text();
 
         const data: FeedDataType = {
