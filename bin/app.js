@@ -54,17 +54,21 @@ function main() {
                 const prevBlogData = yield (0, api_1.getBlogDatas)(firestore);
                 const withRSSBlogData = yield crawler.getTechBlogDataWithRSS();
                 const withoutRSSBlogData = yield crawler.getTechBlogDataWithoutRSS();
+                console.log("크롤링 완료");
                 const currentBlogData = [...withRSSBlogData, ...withoutRSSBlogData];
                 const newFeeds = (_a = (0, utils_1.getNewFeedDatas)(prevBlogData, currentBlogData)) !== null && _a !== void 0 ? _a : [];
                 if (newFeeds.length <= 0)
                     return;
+                console.log("슬랙 메시지 전송 시작");
                 yield (0, api_1.sendGreetings)();
                 yield (0, api_1.sendSlackMessage)(newFeeds);
+                console.log("슬랙 메시지 전송 완료");
+                console.log("데이터 업데이트 시작");
                 yield (0, api_1.postBlogDatas)(firestore, currentBlogData);
-                console.log('크롤링 완료');
+                console.log("데이터 업데이트 완료");
             }
             catch (error) {
-                console.log('에러가 발생하였습니다.', error);
+                console.log("에러가 발생하였습니다.", error);
             }
         }));
     });
