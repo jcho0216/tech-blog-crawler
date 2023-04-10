@@ -32,7 +32,7 @@ export async function sendGreetings() {
 
     await slackbot.chat.postMessage({
         channel: slackChannel,
-        text: `*${date} 기준 신규 블로그 글 목록!*`,
+        text: `*${date} 기준 최신 블로그 글 목록!*`,
     });
 }
 

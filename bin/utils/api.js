@@ -45,7 +45,7 @@ function sendGreetings() {
         const date = (0, moment_1.default)().locale('ko').format("YYYY년 M월 D일, a h시");
         yield slackbot.chat.postMessage({
             channel: slackChannel,
-            text: `*${date} 기준 신규 블로그 글 목록!*`,
+            text: `*${date} 기준 최신 블로그 글 목록!*`,
         });
     });
 }
