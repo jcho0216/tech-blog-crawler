@@ -3,7 +3,7 @@ import cron from "node-cron";
 
 import * as crawler from "./crawlers";
 import initializeFirestore from "./utils/initializeFirebase";
-import { getBlogDatas, postBlogDatas, sendGreetings, sendSlackMessage } from "./utils/api";
+import { getBlogDatas, postBlogDatas, sendSlackMessage } from "./utils/api";
 import { getNewFeedDatas } from "./utils";
 
 async function main() {
@@ -27,7 +27,6 @@ async function main() {
 
             if (newFeeds.length <= 0) return;
             console.log("슬랙 메시지 전송 시작");
-            await sendGreetings();
             await sendSlackMessage(newFeeds);
             console.log("슬랙 메시지 전송 완료");
 

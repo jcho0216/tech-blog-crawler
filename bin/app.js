@@ -60,7 +60,6 @@ function main() {
                 if (newFeeds.length <= 0)
                     return;
                 console.log("슬랙 메시지 전송 시작");
-                yield (0, api_1.sendGreetings)();
                 yield (0, api_1.sendSlackMessage)(newFeeds);
                 console.log("슬랙 메시지 전송 완료");
                 console.log("데이터 업데이트 시작");

@@ -23,44 +23,32 @@ export async function postBlogDatas(firestore: FirebaseFirestore.Firestore, data
     await Promise.allSettled([...requests]);
 }
 
-export async function sendGreetings() {
-    const slackChannel = process.env.SLACK_CHANNEL_CODE ?? "";
-    const slackBotToken = process.env.SLACK_BOT_TOKEN ?? "";
-    const slackbot = new WebClient(slackBotToken);
-
-    const date = moment().locale('ko').format("YYYY년 M월 D일, a h시");
-
-    await slackbot.chat.postMessage({
-        channel: slackChannel,
-        text: `*${date} 기준 최신 블로그 글 목록!*`,
-    });
-}
-
 export async function sendSlackMessage(blogDatas: FirebaseDtoType[]) {
     const slackChannel = process.env.SLACK_CHANNEL_CODE ?? "";
     const slackBotToken = process.env.SLACK_BOT_TOKEN ?? "";
 
     const { chat } = new WebClient(slackBotToken);
 
+    const date = moment().locale("ko").format("YYYY년 M월 D일, a h시");
+
+    let message = `*${date} 기준 최신 블로그 글 목록!*\n`;
+
     for (let blogData of blogDatas) {
         const { blogName, data: feedDatas } = blogData;
 
-        await chat.postMessage({
-            channel: slackChannel,
-            text: `[ *_${blogName}_* ]`,
-            mrkdwn: true,
-        });
+        message += `\n*_${blogName}_*`;
 
         for (let feedData of feedDatas) {
             const date = feedData.pubDate;
-
-            await chat.postMessage({
-                channel: slackChannel,
-                text: `∙  <${feedData.link}|${feedData.title}> (${date})`,
-                mrkdwn: true,
-                unfurl_links: true,
-                unfurl_media: true,
-            });
+            message += `\n∙  <${feedData.link}|${feedData.title}> (${date})\n`;
         }
     }
+
+    await chat.postMessage({
+        channel: slackChannel,
+        text: message,
+        mrkdwn: true,
+        unfurl_links: false,
+        unfurl_media: false,
+    });
 }

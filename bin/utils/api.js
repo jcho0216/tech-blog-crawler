@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendSlackMessage = exports.sendGreetings = exports.postBlogDatas = exports.getBlogDatas = void 0;
+exports.sendSlackMessage = exports.postBlogDatas = exports.getBlogDatas = void 0;
 const web_api_1 = require("@slack/web-api");
 const moment_1 = __importDefault(require("moment"));
 function getBlogDatas(firestore) {
@@ -36,44 +36,29 @@ function postBlogDatas(firestore, data) {
     });
 }
 exports.postBlogDatas = postBlogDatas;
-function sendGreetings() {
-    var _a, _b;
-    return __awaiter(this, void 0, void 0, function* () {
-        const slackChannel = (_a = process.env.SLACK_CHANNEL_CODE) !== null && _a !== void 0 ? _a : "";
-        const slackBotToken = (_b = process.env.SLACK_BOT_TOKEN) !== null && _b !== void 0 ? _b : "";
-        const slackbot = new web_api_1.WebClient(slackBotToken);
-        const date = (0, moment_1.default)().locale('ko').format("YYYY년 M월 D일, a h시");
-        yield slackbot.chat.postMessage({
-            channel: slackChannel,
-            text: `*${date} 기준 최신 블로그 글 목록!*`,
-        });
-    });
-}
-exports.sendGreetings = sendGreetings;
 function sendSlackMessage(blogDatas) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const slackChannel = (_a = process.env.SLACK_CHANNEL_CODE) !== null && _a !== void 0 ? _a : "";
         const slackBotToken = (_b = process.env.SLACK_BOT_TOKEN) !== null && _b !== void 0 ? _b : "";
         const { chat } = new web_api_1.WebClient(slackBotToken);
+        const date = (0, moment_1.default)().locale("ko").format("YYYY년 M월 D일, a h시");
+        let message = `*${date} 기준 최신 블로그 글 목록!*\n`;
         for (let blogData of blogDatas) {
             const { blogName, data: feedDatas } = blogData;
-            yield chat.postMessage({
-                channel: slackChannel,
-                text: `[ *_${blogName}_* ]`,
-                mrkdwn: true,
-            });
+            message += `\n*_${blogName}_*`;
             for (let feedData of feedDatas) {
                 const date = feedData.pubDate;
-                yield chat.postMessage({
-                    channel: slackChannel,
-                    text: `∙  <${feedData.link}|${feedData.title}> (${date})`,
-                    mrkdwn: true,
-                    unfurl_links: true,
-                    unfurl_media: true,
-                });
+                message += `\n∙  <${feedData.link}|${feedData.title}> (${date})\n`;
             }
         }
+        yield chat.postMessage({
+            channel: slackChannel,
+            text: message,
+            mrkdwn: true,
+            unfurl_links: false,
+            unfurl_media: false,
+        });
     });
 }
 exports.sendSlackMessage = sendSlackMessage;
