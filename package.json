@@ -8,7 +8,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node ./bin/app.js",
-    "dev": "ts-node ./src/app.ts"
+    "dev": "ts-node ./src/app.ts",
+    "start:pm2": "pm2 start ./bin/app.js --name tech-blog-crawler"
   },
   "dependencies": {
     "@slack/web-api": "^6.8.1",
