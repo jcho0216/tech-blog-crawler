@@ -47,27 +47,28 @@ function main() {
         dotenv_1.default.config();
         // 평일 오전 10시 실행
         const crawlingCycle = "0 10 * * 1-5";
+        const date = new Date();
         node_cron_1.default.schedule(crawlingCycle, () => __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                console.log("크롤링 시작");
+                console.log(`크롤링 시작  ${(0, utils_1.formatDate)(date)}`);
                 const prevBlogData = yield (0, api_1.getBlogDatas)(firestore);
                 const withRSSBlogData = yield crawler.getTechBlogDataWithRSS();
                 const withoutRSSBlogData = yield crawler.getTechBlogDataWithoutRSS();
-                console.log("크롤링 완료");
+                console.log('크롤링 완료');
                 const currentBlogData = [...withRSSBlogData, ...withoutRSSBlogData];
                 const newFeeds = (_a = (0, utils_1.getNewFeedDatas)(prevBlogData, currentBlogData)) !== null && _a !== void 0 ? _a : [];
                 if (newFeeds.length <= 0)
                     return;
-                console.log("슬랙 메시지 전송 시작");
+                console.log('슬랙 메시지 전송 시작');
                 yield (0, api_1.sendSlackMessage)(newFeeds);
-                console.log("슬랙 메시지 전송 완료");
-                console.log("데이터 업데이트 시작");
+                console.log('슬랙 메시지 전송 완료');
+                console.log('데이터 업데이트 시작');
                 yield (0, api_1.postBlogDatas)(firestore, currentBlogData);
-                console.log("데이터 업데이트 완료");
+                console.log(`데이터 업데이트 완료 ${(0, utils_1.formatDate)(date)}`);
             }
             catch (error) {
-                console.log("에러가 발생하였습니다.", error);
+                console.log(`에러가 발생하였습니다. ${(0, utils_1.formatDate)(date)}`, error);
             }
         }));
     });

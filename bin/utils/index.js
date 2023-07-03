@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getNewFeedDatas = exports.getFulfilledPromiseValueList = exports.formatNonRssBlogsDate = exports.removeAllWhitespace = void 0;
+exports.formatDate = exports.getNewFeedDatas = exports.getFulfilledPromiseValueList = exports.formatNonRssBlogsDate = exports.removeAllWhitespace = void 0;
 const moment_1 = __importDefault(require("moment"));
 function removeAllWhitespace(value) {
     const temp = value.replace("\n", "");
@@ -44,3 +44,13 @@ function getNewFeedDatas(prevBlogDatas, currentBlogDatas) {
     return newFeedDatas;
 }
 exports.getNewFeedDatas = getNewFeedDatas;
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}년 ${month}월 ${day}일, ${hours}:${minutes}:${seconds}`;
+}
+exports.formatDate = formatDate;
