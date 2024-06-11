@@ -2,12 +2,13 @@
   "name": "tech-blog-crawler",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/JunseoChoCenacle/tech-blog-crawler.git",
-  "author": "조준서 <jun.joy@cenacle.com>",
+  "repository": "https://github.com/jcho0216/tech-blog-crawler.git",
+  "author": "조준서 <chojuneseo1@cenacle.com>",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
     "start": "node ./bin/app.js",
+    "start:test": "node ./bin/test/app_test.js",
     "dev": "ts-node ./src/app.ts",
     "start:pm2": "pm2 start ./bin/app.js --name tech-blog-crawler"
   },
