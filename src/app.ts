@@ -26,6 +26,8 @@ async function main() {
 
             const newFeeds = getNewFeedDatas(prevBlogData, currentBlogData) ?? [];
 
+            console.log(newFeeds);
+
             if (newFeeds.length <= 0) return;
             console.log('슬랙 메시지 전송 시작');
             await sendSlackMessage(newFeeds);

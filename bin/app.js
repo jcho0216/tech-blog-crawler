@@ -58,6 +58,7 @@ function main() {
                 console.log('크롤링 완료');
                 const currentBlogData = [...withRSSBlogData, ...withoutRSSBlogData];
                 const newFeeds = (_a = (0, utils_1.getNewFeedDatas)(prevBlogData, currentBlogData)) !== null && _a !== void 0 ? _a : [];
+                console.log(newFeeds);
                 if (newFeeds.length <= 0)
                     return;
                 console.log('슬랙 메시지 전송 시작');
