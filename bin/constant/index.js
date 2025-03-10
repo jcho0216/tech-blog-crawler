@@ -18,6 +18,7 @@ exports.RSSUrls = [
     "https://helloworld.kurly.com/feed.xml",
     "https://toss.tech/rss.xml",
     "https://techblog.yogiyo.co.kr/feed",
+    // error 발생
     "https://blog.dramancompany.com/feed/",
     "https://blog.est.ai/feed",
     "https://hyperconnect.github.io/feed",

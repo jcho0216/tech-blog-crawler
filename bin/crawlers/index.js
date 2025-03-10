@@ -25,11 +25,12 @@ function getTechBlogDataWithRSS() {
                 Accept: "*/*",
             },
         });
-        const requests = constant_1.RSSUrls.map((url) => __awaiter(this, void 0, void 0, function* () {
-            const request = yield parser
+        const requests = constant_1.RSSUrls.map((url) => {
+            const request = parser
                 .parseURL(url)
-                .then((feed) => {
+                .then((feed) => __awaiter(this, void 0, void 0, function* () {
                 var _a;
+                yield setTimeout(() => { }, 100);
                 const blogTitle = (_a = feed.title) !== null && _a !== void 0 ? _a : "";
                 const blogData = feed.items.map((item) => {
                     const { title, link, pubDate } = item;
@@ -44,13 +45,10 @@ function getTechBlogDataWithRSS() {
                     blogName: blogTitle,
                     data: blogData,
                 };
-            })
-                .catch((error) => {
-                console.error(`Error scraping ${url} : ${error}`);
-            });
+            }));
             return request;
-        }));
-        const settledList = yield Promise.allSettled([...requests]);
+        });
+        const settledList = (yield Promise.allSettled([...requests])).filter(e => e.status == 'fulfilled');
         return (0, utils_1.getFulfilledPromiseValueList)(settledList);
     });
 }

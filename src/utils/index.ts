@@ -11,7 +11,7 @@ export function formatNonRssBlogsDate(value: string) {
     return baseDate.format("YYYY.MM.DD");
 }
 
-export function getFulfilledPromiseValueList<T>(promiseSettledList: PromiseSettledResult<T | void>[]) {
+export function getFulfilledPromiseValueList<T>(promiseSettledList: PromiseSettledResult<T>[]) {
     const fulfilledList = promiseSettledList
         .filter((value) => value.status === "fulfilled")
         .map((value) => (value as PromiseFulfilledResult<T>).value);
