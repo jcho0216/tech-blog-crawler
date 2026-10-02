@@ -28,6 +28,5 @@ exports.RSSUrls = [
     "https://ridicorp.com/feed/",
     "https://engineering-skcc.github.io/feed",
     "https://tech.socarcorp.kr/feed",
-    "https://medium.com/feed/tving-team",
     "https://medium.com/feed/@dev29cm",
 ];

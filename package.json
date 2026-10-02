@@ -10,14 +10,15 @@
     "start": "node ./bin/app.js",
     "start:test": "node ./bin/test/app_test.js",
     "dev": "ts-node ./src/app.ts",
-    "start:pm2": "pm2 start ./bin/app.js --name tech-blog-crawler"
+    "start:pm2": "pm2 start ./bin/app.js --name tech-blog-crawler",
+    "postinstall": "patch-package"
   },
   "dependencies": {
-    "@slack/web-api": "^6.8.1",
+    "@slack/web-api": "^7.12.0",
     "axios": "^1.3.4",
     "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.0.3",
-    "firebase-admin": "^11.5.0",
+    "firebase-admin": "^13.6.0",
     "moment": "^2.29.4",
     "node-cron": "^3.0.2",
     "rss-parser": "^3.12.0"
@@ -28,6 +29,8 @@
     "@types/moment": "^2.13.0",
     "@types/node": "^18.15.11",
     "@types/node-cron": "^3.0.7",
+    "patch-package": "^8.0.1",
+    "postinstall-postinstall": "^2.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.3"
   }
